@@ -29,7 +29,7 @@ class TestEZDiffusionModel(unittest.TestCase):
         y = np.exp(-a * v)
         expected_R = 1 / (y + 1)
         expected_M = t + (a / (2 * v)) * ((1 - y) / (1 + y))
-        expected_V = (a / (2 * v**3)) * ((1 - 2 * a * v - y**2) / ((y + 1) ** 2))
+        expected_V = (a / (2 * v**3)) * ((1 - 2 * a * v * y - y**2) / ((y + 1) ** 2))
         
         self.assertAlmostEqual(results["R_pred"], expected_R, places=5)
         self.assertAlmostEqual(results["M_pred"], expected_M, places=5)
