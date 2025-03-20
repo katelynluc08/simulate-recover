@@ -159,15 +159,16 @@ def consistency_func(sample_size_arr : list, num_iter : int) -> tuple:
             bias_t_iter = []
 
         overall_avg_error = total_avg_error / total_iterations # Overall avg error to check if it is equal to or less than 0.4
+        overall_avg_squared_error = total_squared_error / total_iterations # Overall avg squared error  
 
-    return overall_avg_error <= THRESHOLD, overall_avg_error, squared_errors_per_sample_size # you need to calculate b^2 here in order to output the mean squared error in the print statement 
+    return overall_avg_error <= THRESHOLD, overall_avg_error, squared_errors_per_sample_size, overall_avg_squared_error  # you need to calculate b^2 here in order to output the mean squared error in the print statement 
 
 
 if __name__ == "__main__":
     sample_size = [10,40,4000]
     iterations = 1000
 
-    is_consistent, overall_avg_error, squared_errors_per_sample_size = consistency_func(sample_size, iterations)
+    is_consistent, overall_avg_error, squared_errors_per_sample_size, overall_avg_squared_error = consistency_func(sample_size, iterations)
 
     print(f"Result is {'consistent' if is_consistent else 'not consistent'} with an average error of {overall_avg_error}")
 

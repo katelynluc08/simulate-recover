@@ -1,1 +1,8 @@
-Sample size 10: avg squared error = 2.4357350460767355Sample size 10: Average Bias for v: -1.63474, a: 0.01768, t: 0.20988Sample size 40: avg squared error = 1.310895257029073Sample size 40: Average Bias for v: -0.71859, a: -0.00021, t: 0.23317Sample size 4000: avg squared error = 0.2596403668072004Sample size 4000: Average Bias for v: -0.47095, a: 0.07252, t: 0.04660
+Sample size 10: Avg squared error = 2.4357350460767355
+Sample size 10: Average Bias for v: -1.63474, a: 0.01768, t: 0.20988
+
+Sample size 40: Avg squared error = 1.310895257029073
+Sample size 40: Average Bias for v: -0.71859, a: -0.00021, t: 0.23317
+
+Sample size 4000: avg squared error = 0.2596403668072004
+Sample size 4000: Average Bias for v: -0.47095, a: 0.07252, t: 0.04660
