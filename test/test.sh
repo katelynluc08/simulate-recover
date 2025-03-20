@@ -1,3 +1,5 @@
+# Acknowledge use of AI for help with code 
+
 #!/bin/bash
 
 # This script runs the test suite for the EZ diffusion model implementation
