@@ -1,3 +1,5 @@
+# Acknowledge use of AI for help 
+
 # This script runs the complete 3000-iteration simulate-and-recovery exercise
 # for the EZ diffusion model consistency test
 
