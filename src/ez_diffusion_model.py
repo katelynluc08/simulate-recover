@@ -93,7 +93,6 @@ def inverse_eq(R_obs, V_obs, M_obs):
     bracket_term = (1 - np.exp(-v_est * a_est)) / (1 + np.exp(-v_est * a_est))
 
     t_est = M_obs - (a_est / (2 * v_est)) * bracket_term if v_est != 0 else M_obs
-
     return v_est, a_est, t_est
 
 
@@ -103,62 +102,63 @@ def consistency_func(sample_size_arr : list, num_iter : int) -> tuple:
     bias_a_iter = []
     bias_t_iter = []
 
-
     total_iterations = len(sample_size_arr) * num_iter # 3000 iterations
 
     total_avg_error = 0 # Accumulates the avg errors across all N and iterations
     total_squared_error = 0 # Accumulates squared errors across all N and iterations
     squared_errors_per_sample_size = [] # Stores avg squared error for each N
 
-    for n in sample_size_arr: # For each sample size
+    with open('Results.txt', 'w') as f:
 
-        sample_size_errors = 0 # Accumulate errors for this current sample size
-        sample_size_squared_errors = 0 # Accumulate squared errors for current sample size
+        for n in sample_size_arr: # For each sample size
 
-        for i in range(num_iter): # For each iteration starting from 0-999
+            sample_size_errors = 0 # Accumulate errors for this current sample size
+            sample_size_squared_errors = 0 # Accumulate squared errors for current sample size
 
-            a, v, t = random_parameters() # Generate random parameters
+            for i in range(num_iter): # For each iteration starting from 0-999
 
-            res_pred = forward_eq(a,v,t) # Expected results(baseline results to compare to)
-            R_pred, M_pred, V_pred = res_pred["R_pred"], res_pred["M_pred"], res_pred["V_pred"] # Extract results from res_pred for next steps
+                a, v, t = random_parameters() # Generate random parameters
 
-            res_R_obs = simulate_R_obs(R_pred, n) # Real data (simulate expected results with noise)
-            res_M_obs = simulate_M_obs(M_pred, V_pred, n)
-            res_V_obs = simulate_V_obs(V_pred, n)
+                res_pred = forward_eq(a,v,t) # Expected results(baseline results to compare to)
+                R_pred, M_pred, V_pred = res_pred["R_pred"], res_pred["M_pred"], res_pred["V_pred"] # Extract results from res_pred for next steps
+
+                res_R_obs = simulate_R_obs(R_pred, n) # Real data (simulate expected results with noise)
+                res_M_obs = simulate_M_obs(M_pred, V_pred, n)
+                res_V_obs = simulate_V_obs(V_pred, n)
 
 
-            v_est, a_est, t_est = inverse_eq(res_R_obs, res_V_obs, res_M_obs) # Given the results you estimate the og parameters based on it (using obs and estimating the parameters that were given to pred function)
+                v_est, a_est, t_est = inverse_eq(res_R_obs, res_V_obs, res_M_obs) # Given the results you estimate the og parameters based on it (using obs and estimating the parameters that were given to pred function)
 
-            avg_error = (abs(a - a_est) + abs(v - v_est) + abs(t - t_est))/3 # Average error of the parameters for this iteration (bias)
+                avg_error = (abs(a - a_est) + abs(v - v_est) + abs(t - t_est))/3 # Average error of the parameters for this iteration (bias)
 
-            avg_squared_error = avg_error**2 # Average error of the parameters for this iteration (bias^2)
+                avg_squared_error = avg_error**2 # Average error of the parameters for this iteration (bias^2)
 
-            bias_v_iter.append(v_est - v)
-            bias_a_iter.append(a_est - a)
-            bias_t_iter.append(t_est - t)
+                bias_v_iter.append(v - v_est)
+                bias_a_iter.append(a - a_est)
+                bias_t_iter.append(t - t_est)
 
-            sample_size_errors += avg_error # Stores 1000 iterations for N
-            sample_size_squared_errors += avg_squared_error # Stores 1000 iterations for N
+                sample_size_errors += avg_error # Stores 1000 iterations for N
+                sample_size_squared_errors += avg_squared_error # Stores 1000 iterations for N
 
-            total_avg_error += avg_error # Stores 3000 avg errors
-            total_squared_error += avg_squared_error # Stores 3000 avg squared errors
-            print(f"Iteration {i}, Sample Size {n}: v_est={v_est}, a_est={a_est}, t_est={t_est}")
+                total_avg_error += avg_error # Stores 3000 avg errors
+                total_squared_error += avg_squared_error # Stores 3000 avg squared errors
+                print(f"Iteration {i}, Sample Size {n}: v_est={v_est}, a_est={a_est}, t_est={t_est}")
 
-        avg_squared_error_for_size = sample_size_squared_errors / num_iter # Calculates average of the 1000 avg squared errors in each N
-        squared_errors_per_sample_size.append(avg_squared_error_for_size) # Adding this average per N to list
+            avg_squared_error_for_size = sample_size_squared_errors / num_iter # Calculates average of the 1000 avg squared errors in each N
+            squared_errors_per_sample_size.append(avg_squared_error_for_size) # Adding this average per N to list
 
-        avg_bias_v = sum(bias_v_iter) / len(bias_v_iter)
-        avg_bias_a = sum(bias_a_iter) / len(bias_a_iter)
-        avg_bias_t = sum(bias_t_iter) / len(bias_t_iter)
+            avg_bias_v = sum(bias_v_iter) / len(bias_v_iter)
+            avg_bias_a = sum(bias_a_iter) / len(bias_a_iter)
+            avg_bias_t = sum(bias_t_iter) / len(bias_t_iter)
 
-        print(f"Sample size {n}: avg squared error = {avg_squared_error_for_size}") # Prints avg squared error for current sample size
-        print(f"Sample size {n}: Average Bias for v: {avg_bias_v:.5f}, a: {avg_bias_a:.5f}, t: {avg_bias_t:.5f}") # Prints avg error for each parameter for current sample size 
+            f.write(f"Sample size {n}: avg squared error = {avg_squared_error_for_size}") # Prints avg squared error for current sample size
+            f.write(f"Sample size {n}: Average Bias for v: {avg_bias_v:.5f}, a: {avg_bias_a:.5f}, t: {avg_bias_t:.5f}") # Prints avg error for each parameter for current sample size 
 
-        bias_v_iter = []
-        bias_a_iter = []
-        bias_t_iter = []
+            bias_v_iter = []
+            bias_a_iter = []
+            bias_t_iter = []
 
-    overall_avg_error = total_avg_error / total_iterations # Overall avg error to check if it is equal to or less than 0.4
+        overall_avg_error = total_avg_error / total_iterations # Overall avg error to check if it is equal to or less than 0.4
 
     return overall_avg_error <= THRESHOLD, overall_avg_error, squared_errors_per_sample_size # you need to calculate b^2 here in order to output the mean squared error in the print statement 
 
