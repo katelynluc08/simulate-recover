@@ -1,3 +1,5 @@
+# Acknowledge use of AI for help 
+
 import random
 import numpy as np
 import scipy.stats as stats
